@@ -1,6 +1,9 @@
 <template>
-  <h1>Hello TDS!</h1>
+  <div class="app">
+    <CurrencyConverter />
+  </div>
 </template>
 
-<script setup lang="ts"></script>
-<style scoped></style>
+<script setup lang="ts">
+import CurrencyConverter from './components/converter/CurrencyConverter.vue'
+</script>
