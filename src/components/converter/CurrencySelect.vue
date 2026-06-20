@@ -1,8 +1,8 @@
 <template>
   <div class="currency-select">
-    <AmountInput :data="propsData1" :is-active="isInputActive('input-one')" />
+    <AmountInput :data="propsData1" label="Amount" :is-active="isInputActive('input-one')" />
     <ArrowSwap class="currency-select__arrow-swap" @click="reverseActiveElement()" />
-    <AmountInput :data="propsData2" :is-active="isInputActive('input-two')" />
+    <AmountInput :data="propsData2" label="Converted To" :is-active="isInputActive('input-two')" />
   </div>
 </template>
 
@@ -16,13 +16,11 @@ const activeElement = ref({
 })
 
 const propsData1 = {
-  label: 'Amount',
   currencyCode: 'USD',
   currencyList: ['USD', 'EUR'],
 }
 
 const propsData2 = {
-  label: 'Converted To',
   currencyCode: 'USD',
   currencyList: ['USD', 'EUR'],
 }
@@ -35,7 +33,6 @@ function isInputActive(name: string): boolean {
 }
 
 function reverseActiveElement(): void {
-  console.log(activeElement.value)
   if (activeElement.value.name === 'input-one') {
     activeElement.value.name = 'input-two'
     return
@@ -63,7 +60,7 @@ function reverseActiveElement(): void {
   border: solid 1px gray;
   padding: 4px;
   position: absolute;
-  top: 49%;
+  top: 48%;
   transform: translate(0, -40%);
 }
 </style>

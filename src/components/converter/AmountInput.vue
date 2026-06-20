@@ -3,12 +3,13 @@
     <p class="currency-amount__label">{{ props.data.label }}</p>
     <div class="currency-amount__info">
       <div class="container">
+        <!-- {{ currenCurrency }} -->
         <p>{{ currencySign }}</p>
         <UiInput type="number" :numeric="true" />
-        <div class="container__select-currency">
+        <div class="container__select-currency" @click="pickCurrency">
           <span class="container__select-currency__divider"> </span>
           <div class="container__select-currency__curencyCode">
-            {{ props.data.currencyCode }}
+            {{ currenCurrency.currencyCode }}
           </div>
         </div>
       </div>
@@ -18,24 +19,44 @@
 
 <script setup lang="ts">
 import UiInput from '../Ui/UiInput/UiInput.vue'
+import { usePopup } from '@/composables/usePopup'
+import { defineAsyncComponent, ref } from 'vue'
 
 export interface UiInputProps {
-  data: {
-    label: string
-    currencyCode: string
-    currencyList: string[]
-  }
+  label: string
+  data: currency
   isActive: boolean
 }
+
+interface currency {
+  currencyCode: string
+}
+
+const { open } = usePopup()
 
 const props = withDefaults(defineProps<UiInputProps>(), {
   isActive: () => false,
 })
 
+const currenCurrency = ref<currency>(props.data)
+
 // const currencySign = composable(getCurrencySignBasedOnCode(props.currency))
 const currencySign = '$'
 
-// const model = defineModel
+async function pickCurrency(e: MouseEvent) {
+  const chosenCode = await open<string>({
+    component: defineAsyncComponent(() => import('./CurrencyList.vue')),
+    anchor: e.currentTarget as HTMLElement,
+    placement: 'bottom-end',
+    closable: true,
+  })
+
+  if (chosenCode) {
+    currenCurrency.value = {
+      currencyCode: chosenCode,
+    }
+  }
+}
 </script>
 
 <style scoped>
@@ -48,7 +69,7 @@ const currencySign = '$'
 }
 
 .currency-amount__info {
-  border: var(--border) solid 1px;
+  border: var(--border-color) solid 1px;
   overflow: hidden;
   border-radius: var(--border-radius);
 }
@@ -61,6 +82,8 @@ const currencySign = '$'
 }
 
 .container__select-currency {
+  max-width: 70px;
+  width: 100%;
   display: flex;
   align-items: center;
   background-color: var(--bg-secondary);
