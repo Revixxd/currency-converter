@@ -15,6 +15,7 @@
         "format": "oxfmt src/"
     },
     "dependencies": {
+        "ofetch": "^1.5.1",
         "vue": "^3.5.38"
     },
     "devDependencies": {

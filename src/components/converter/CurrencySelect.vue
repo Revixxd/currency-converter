@@ -3,13 +3,26 @@
     <AmountInput :data="propsData1" label="Amount" :is-active="isInputActive('input-one')" />
     <ArrowSwap class="currency-select__arrow-swap" @click="reverseActiveElement()" />
     <AmountInput :data="propsData2" label="Converted To" :is-active="isInputActive('input-two')" />
+    <Button @click="convert()">convert</Button>
+    {{ convertedValue }}
   </div>
 </template>
 
 <script setup lang="ts">
 import AmountInput from './AmountInput.vue'
 import ArrowSwap from '../../assets/ArrowSwap.svg'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import useCurrencieConverter from '@/composables/useCurrencieConvert.ts'
+
+const { convertCurrencies, convertedValue } = useCurrencieConverter()
+
+function convert() {
+  convertCurrencies({
+    from: 'USD',
+    to: 'EUR',
+    amount: 100,
+  })
+}
 
 const activeElement = ref({
   name: 'input-one',
@@ -17,12 +30,10 @@ const activeElement = ref({
 
 const propsData1 = {
   currencyCode: 'USD',
-  currencyList: ['USD', 'EUR'],
 }
 
 const propsData2 = {
   currencyCode: 'USD',
-  currencyList: ['USD', 'EUR'],
 }
 
 function isInputActive(name: string): boolean {

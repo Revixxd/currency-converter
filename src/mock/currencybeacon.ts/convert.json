@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "code": 200,
+    "disclaimer": "Usage subject to terms: https://currencybeacon.com/terms"
+  },
+  "response": {
+    "timestamp": 1781985316,
+    "date": "2026-06-20",
+    "from": "USD",
+    "to": "EUR",
+    "amount": 100,
+    "value": 87.148387
+  },
+  "timestamp": 1781985316,
+  "date": "2026-06-20",
+  "from": "USD",
+  "to": "EUR",
+  "amount": 100,
+  "value": 87.148387
+}

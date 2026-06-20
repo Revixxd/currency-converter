@@ -3,6 +3,7 @@ import { markRaw, type Component } from 'vue'
 
 type OverlayOptions = {
   component: Component
+  props: Record<string, unknown>
 }
 
 interface OverlayInstance extends OverlayOptions {
@@ -19,6 +20,7 @@ export default function useOverlay() {
       }
 
       overlay.value = {
+        ...options,
         component: markRaw(options.component),
         resolve: resolve as (v: unknown) => void,
       }

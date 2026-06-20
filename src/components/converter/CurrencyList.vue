@@ -6,10 +6,10 @@
     <div class="currency-list__currencies">
       <div
         class="currencie-container"
-        v-for="currency in currencies"
-        @click="$emit('resolve', currency.currencieCode)"
+        v-for="currency in props.currencies"
+        @click="$emit('resolve', currency.shortCode)"
       >
-        {{ currency.currencieCode }} - {{ currency.currencieFullName }}
+        {{ currency.shortCode }} - {{ currency.name }}
       </div>
     </div>
   </div>
@@ -17,20 +17,19 @@
 
 <script setup lang="ts">
 // import UiInput from '@/components/Ui/UiInput/UiInput.vue'
+import type { currency } from '@/types/currencies.type'
 
-const currencies = [
-  {
-    currencieCode: 'USD',
-    currencieFullName: 'United State dolar',
-  },
-  {
-    currencieCode: 'EUR',
-    currencieFullName: 'Euro',
-  },
-]
+const props = defineProps<{
+  currencies?: currency[]
+}>()
 </script>
 
 <style scoped>
+.currency-list {
+  height: 300px;
+  width: 330px;
+  overflow: auto;
+}
 .currency-list__search,
 .currency-list__currencies {
   padding: 20px;
