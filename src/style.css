@@ -19,6 +19,8 @@
 
   --divider-color: gray;
 
+  --overlay-background: #9fa0a2;
+
   font-family: var(--font);
   letter-spacing: 0.18px;
   color-scheme: light;

@@ -3,8 +3,6 @@ import { usePopup } from '@/composables/usePopup.ts'
 import UiPopup from '@/components/Ui/UiPopup/UiPopup.vue'
 
 const { popups, close } = usePopup()
-
-console.log(popups)
 </script>
 
 <template>

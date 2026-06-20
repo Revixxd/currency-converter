@@ -1,9 +1,8 @@
 <template>
   <div class="currency-amount" :class="{ active: isActive }">
-    <p class="currency-amount__label">{{ props.data.label }}</p>
-    <div class="currency-amount__info">
+    <p class="currency-amount__label">{{ props.label }}</p>
+    <div class="currency-amount__info" v-if="!isMobile">
       <div class="container">
-        <!-- {{ currenCurrency }} -->
         <p>{{ currencySign }}</p>
         <UiInput type="number" :numeric="true" />
         <div class="container__select-currency" @click="pickCurrency">
@@ -14,6 +13,17 @@
         </div>
       </div>
     </div>
+    <div class="currency-amount__info mobile" v-else-if="isMobile">
+      <div class="container">
+        <div class="container__select-currency" @click="pickCurrency">
+          <div class="container__select-currency__curencyCode">
+            {{ currenCurrency.currencyCode }}
+          </div>
+        </div>
+        <p>{{ currencySign }}</p>
+        <UiInput type="number" :numeric="true" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -21,6 +31,8 @@
 import UiInput from '../Ui/UiInput/UiInput.vue'
 import { usePopup } from '@/composables/usePopup'
 import { defineAsyncComponent, ref } from 'vue'
+import { useSize } from '@/composables/useSize.ts'
+import useOverlay from '@/composables/useOverlay.ts'
 
 export interface UiInputProps {
   label: string
@@ -32,11 +44,15 @@ interface currency {
   currencyCode: string
 }
 
-const { open } = usePopup()
+const { isMobile, isDesktop } = useSize()
+const { open: openPopup } = usePopup()
+const { open: openOverlay } = useOverlay()
 
 const props = withDefaults(defineProps<UiInputProps>(), {
   isActive: () => false,
 })
+
+const lazyCurrentListComponent = defineAsyncComponent(() => import('./CurrencyList.vue'))
 
 const currenCurrency = ref<currency>(props.data)
 
@@ -44,12 +60,19 @@ const currenCurrency = ref<currency>(props.data)
 const currencySign = '$'
 
 async function pickCurrency(e: MouseEvent) {
-  const chosenCode = await open<string>({
-    component: defineAsyncComponent(() => import('./CurrencyList.vue')),
-    anchor: e.currentTarget as HTMLElement,
-    placement: 'bottom-end',
-    closable: true,
-  })
+  let chosenCode
+  if (isMobile.value) {
+    chosenCode = await openOverlay<string>({
+      component: lazyCurrentListComponent,
+    })
+  } else {
+    chosenCode = await openPopup<string>({
+      component: lazyCurrentListComponent,
+      anchor: e.currentTarget as HTMLElement,
+      placement: 'bottom-end',
+      closable: true,
+    })
+  }
 
   if (chosenCode) {
     currenCurrency.value = {
@@ -109,5 +132,25 @@ async function pickCurrency(e: MouseEvent) {
 
 .active .container__select-currency {
   background-color: var(--accent-secondary);
+}
+
+/* MOBILE */
+
+.mobile .container {
+  padding: 0.5rem;
+}
+
+.mobile .container__select-currency {
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 0.3rem;
+}
+
+.mobile .container__select-currency__curencyCode {
+  padding: 0;
 }
 </style>
