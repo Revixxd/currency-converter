@@ -22,7 +22,7 @@ const currencyInfo = computed(() => {
 const currencyDate = computed(() => {
   const date = new Date(props.baseCurrencyInfo.timestamp * 1000)
 
-  return `${getMonthBasedOnNumber(date.getMonth()).shortName} ${date.getDay()}, at ${date.getHours()}:${date.getMinutes()}`
+  return `${getMonthBasedOnNumber(date.getMonth()).shortName} ${date.getDate()}, at ${date.getHours()}:${date.getMinutes()}`
 })
 </script>
 
