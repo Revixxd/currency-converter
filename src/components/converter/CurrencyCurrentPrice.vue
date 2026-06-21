@@ -1,11 +1,30 @@
 <template>
-  <div class="curreny-current-price">
-    <p class="curreny-current-price__price">1 USD = 0.92 EUR</p>
-    <p class="curreny-current-price__date">as of Jun 18, 11:44 PM</p>
+  <div v-if="props.baseCurrencyInfo" class="curreny-current-price">
+    <p class="curreny-current-price__price">{{ currencyInfo }}</p>
+    <p class="curreny-current-price__date">as of {{ currencyDate }}</p>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import type { ConvertedValue } from '@/types/currencies.type'
+import { computed } from 'vue'
+import getMonthBasedOnNumber from '@/helpers/getMonth'
+type CurrencyCurrentPriceProps = {
+  baseCurrencyInfo: ConvertedValue
+}
+
+const props = defineProps<CurrencyCurrentPriceProps>()
+
+const currencyInfo = computed(() => {
+  const data = props.baseCurrencyInfo
+  return `${data.amount} ${data.from} = ${data.value} ${data.to}`
+})
+const currencyDate = computed(() => {
+  const date = new Date(props.baseCurrencyInfo.timestamp * 1000)
+
+  return `${getMonthBasedOnNumber(date.getMonth()).shortName} ${date.getDay()}, at ${date.getHours()}:${date.getMinutes()}`
+})
+</script>
 
 <style scoped>
 .curreny-current-price {

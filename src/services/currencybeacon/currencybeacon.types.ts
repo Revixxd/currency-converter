@@ -7,7 +7,13 @@ type FetchDataType = {
   headers?: Record<string, string>
   from?: string
   to?: string
-  amount: string
+  amount: number
 }
 
-export type { FetchDataType }
+type FetchDataRequestType = {
+  from: string
+  to: string
+  amount: number
+}
+
+export type { FetchDataType, FetchDataRequestType }

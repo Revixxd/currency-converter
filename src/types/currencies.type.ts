@@ -5,8 +5,7 @@ type Currency = {
 }
 
 type ConvertedValue = {
-  timestamp: string
-  date: Date
+  timestamp: number
   from: string
   to: string
   amount: number

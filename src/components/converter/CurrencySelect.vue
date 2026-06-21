@@ -25,7 +25,11 @@ import AmountInput from './AmountInput.vue'
 import ArrowSwap from '../../assets/ArrowSwap.svg'
 import { computed, onMounted, ref, type Ref } from 'vue'
 import useCurrencieConverter from '@/composables/useCurrencieConvert.ts'
-import type { ConvertCurrencies } from '@/types/currencies.type.ts'
+import type { ConvertCurrencies, ConvertedValue } from '@/types/currencies.type.ts'
+
+const emit = defineEmits<{
+  updateBaseCurrencyInfo: [ConvertedValue]
+}>()
 
 const { convertCurrencies, isLoading } = useCurrencieConverter()
 
@@ -45,12 +49,19 @@ const sourceInput = computed(() => (activeElement.value === 'input-one' ? inputO
 const targetInput = computed(() => (activeElement.value === 'input-one' ? inputTwo : inputOne))
 
 function convert() {
-  convertCurrencies({
-    from: sourceInput.value.value.currency,
-    to: targetInput.value.value.currency,
-    amount: sourceInput.value.value.amount,
-  }).then((result) => {
-    syncInputsFromResult(result)
+  convertCurrencies(
+    {
+      from: sourceInput.value.value.currency,
+      to: targetInput.value.value.currency,
+      amount: sourceInput.value.value.amount,
+    },
+    true,
+  ).then((result) => {
+    const { convertedValues, convertedCurrencyBase } = result
+    syncInputsFromResult(convertedValues)
+    if (convertedCurrencyBase) {
+      emit('updateBaseCurrencyInfo', convertedCurrencyBase)
+    }
   })
 }
 

@@ -1,5 +1,4 @@
-import type { ConvertCurrencies } from '@/types/currencies.type'
-import type { FetchDataType } from './currencybeacon.types'
+import type { FetchDataType, FetchDataRequestType } from './currencybeacon.types'
 import { ofetch } from 'ofetch'
 import currenciesListJson from '@/mock/currencybeacon.ts/currencies.json'
 import ConvertedValuesMock from '@/mock/currencybeacon.ts/convert.json'
@@ -59,7 +58,7 @@ async function getCurrencies() {
 }
 
 // TODO: Error handling
-async function convertValues(obj: ConvertCurrencies) {
+async function convertValues(obj: FetchDataRequestType) {
   if (isDev) {
     return mapConvertResponseToPlainConvertValue(ConvertedValuesMock)
   } else {

@@ -2,16 +2,20 @@
   <div class="converter">
     <h2>Currency Converter</h2>
     <div class="container">
-      <CurrencySelect />
+      <CurrencySelect @updateBaseCurrencyInfo="baseCurrencyInfo = $event" />
       <span class="converter__divider" />
-      <CurrencyCurrentPrice />
+      <CurrencyCurrentPrice :baseCurrencyInfo="baseCurrencyInfo" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { ConvertedValue } from '@/types/currencies.type.ts'
+import { ref } from 'vue'
 import CurrencySelect from './CurrencySelect.vue'
 import CurrencyCurrentPrice from './CurrencyCurrentPrice.vue'
+
+const baseCurrencyInfo = ref<ConvertedValue>()
 </script>
 
 <style scoped>
