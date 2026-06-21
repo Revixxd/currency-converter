@@ -4,7 +4,12 @@
     <div class="currency-amount__info" v-if="!isMobile">
       <div class="container">
         <p>{{ currencySign }}</p>
-        <UiInput v-model="amountModel" type="number" :numeric="true" />
+        <UiInput
+          v-model="amountModel"
+          type="number"
+          :numeric="true"
+          :is-disable="props.isDisable"
+        />
         <div class="container__select-currency" @click="pickCurrency">
           <span class="container__select-currency__divider"> </span>
           <div class="container__select-currency__curencyCode">
@@ -21,7 +26,12 @@
           </div>
         </div>
         <p>{{ currencySign }}</p>
-        <UiInput v-model="amountModel" type="number" :numeric="true" />
+        <UiInput
+          v-model="amountModel"
+          type="number"
+          :numeric="true"
+          :is-disable="props.isDisable"
+        />
       </div>
     </div>
   </div>
@@ -44,6 +54,7 @@ export interface UiInputProps {
     amount: number
   }
   isActive: boolean
+  isDisable: boolean
 }
 
 const { isMobile } = useSize()

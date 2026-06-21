@@ -1,22 +1,22 @@
 <template>
-  <div v-if="isLoading">LOADING</div>
-  <div v-else class="currency-select">
+  <div class="currency-select">
     <AmountInput
       :data="inputOne"
       :is-active="isInputActive('input-one')"
+      :is-disable="!isInputActive('input-one') || isLoading"
       @updateCurrency="(currency: string) => updateRefParam(inputOne, 'currency', currency)"
-      @updateAmount="(amount: number) => updateRefParam(inputOne, 'amount', amount)"
+      @updateAmount="(amount: number) => updateRefParamWithDebounce(inputOne, 'amount', amount)"
       label="Amount"
     />
     <ArrowSwap class="currency-select__arrow-swap" @click="reverseActiveElement()" />
     <AmountInput
       :data="inputTwo"
       :is-active="isInputActive('input-two')"
+      :is-disable="!isInputActive('input-two') || isLoading"
       @updateCurrency="(currency: string) => updateRefParam(inputTwo, 'currency', currency)"
-      @updateAmount="(amount: number) => updateRefParam(inputTwo, 'amount', amount)"
+      @updateAmount="(amount: number) => updateRefParamWithDebounce(inputTwo, 'amount', amount)"
       label="Amount"
     />
-    <button @click="convert()">convert</button>
   </div>
 </template>
 
@@ -24,6 +24,7 @@
 import AmountInput from './AmountInput.vue'
 import ArrowSwap from '../../assets/ArrowSwap.svg'
 import { computed, onMounted, ref, type Ref } from 'vue'
+import { useDebounceFn } from '@vueuse/core'
 import useCurrencieConverter from '@/composables/useCurrencieConvert.ts'
 import type { ConvertCurrencies, ConvertedValue } from '@/types/currencies.type.ts'
 
@@ -80,6 +81,17 @@ function syncInputsFromResult(result: ConvertCurrencies) {
   }
 }
 
+const updateRefParamWithDebounce = useDebounceFn(
+  (
+    input: Ref<{ currency: string; amount?: number }>,
+    type: 'currency' | 'amount',
+    value: string | number,
+  ) => {
+    updateRefParam(input, type, value)
+  },
+  1000,
+)
+
 function updateRefParam(
   input: Ref<{ currency: string; amount?: number }>,
   type: 'currency' | 'amount',
@@ -90,12 +102,13 @@ function updateRefParam(
   } else {
     input.amount = value as number
   }
+  convert()
 }
 
 function isInputActive(name: string): boolean {
   return activeElement.value === name
 }
-
+// TODO: Swap CurrencyCurrentPrice - Reload and cache
 function reverseActiveElement(): void {
   activeElement.value = activeElement.value === 'input-one' ? 'input-two' : 'input-one'
 }
