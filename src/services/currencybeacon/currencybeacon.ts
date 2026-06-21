@@ -11,7 +11,6 @@ const apiKey = import.meta.env.VITE_CURRENCYBEACON_TOKEN
 const version = import.meta.env.VITE_CURRENCYBEACON_API_VERSION
 const isDev = import.meta.env.DEV
 
-// TODO: refactor params passing based on request rather than setting all possible props
 async function request(options: FetchDataType) {
   let response
   let error
@@ -35,7 +34,6 @@ async function request(options: FetchDataType) {
     error,
   }
 }
-// TODO: Error handling
 async function getCurrencies() {
   if (isDev) {
     return mapCurrenciesResponseToPlainConvertValue(currenciesListJson)
@@ -57,7 +55,6 @@ async function getCurrencies() {
   }
 }
 
-// TODO: Error handling
 async function convertValues(obj: FetchDataRequestType) {
   if (isDev) {
     return mapConvertResponseToPlainConvertValue(ConvertedValuesMock)
