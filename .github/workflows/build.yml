@@ -1,0 +1,25 @@
+name: Build
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - run: pnpm ci
+
+      - name: Build
+        env:
+          VITE_CURRENCYBEACON_API: ${{ secrets.VITE_CURRENCYBEACON_API }}
+          VITE_CURRENCYBEACON_API_VERSION: ${{ secrets.VITE_CURRENCYBEACON_API_VERSION }}
+          VITE_CURRENCYBEACON_TOKEN: ${{ secrets.VITE_CURRENCYBEACON_TOKEN }}
+        run: pnpm run build
