@@ -4,16 +4,16 @@
       :data="inputOne"
       :is-active="isInputActive('input-one')"
       :is-disable="!isInputActive('input-one') || isLoading"
-      @updateCurrency="(currency: string) => updateRefParam(inputOne, 'currency', currency)"
+      @updateCurrency="(currency: string) => updateOneRefParam(inputOne, 'currency', currency)"
       @updateAmount="(amount: number) => updateRefParamWithDebounce(inputOne, 'amount', amount)"
       label="Amount"
     />
-    <ArrowSwap class="currency-select__arrow-swap" @click="reverseActiveElement()" />
+    <ArrowSwap class="currency-select__arrow-swap" @click="reverseValues()" />
     <AmountInput
       :data="inputTwo"
       :is-active="isInputActive('input-two')"
       :is-disable="!isInputActive('input-two') || isLoading"
-      @updateCurrency="(currency: string) => updateRefParam(inputTwo, 'currency', currency)"
+      @updateCurrency="(currency: string) => updateOneRefParam(inputTwo, 'currency', currency)"
       @updateAmount="(amount: number) => updateRefParamWithDebounce(inputTwo, 'amount', amount)"
       label="Amount"
     />
@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import AmountInput from './AmountInput.vue'
 import ArrowSwap from '../../assets/ArrowSwap.svg'
-import { computed, onMounted, ref, type Ref } from 'vue'
+import { computed, onMounted, ref, toRaw, type Ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import useCurrencieConverter from '@/composables/useCurrencieConvert.ts'
 import type { ConvertCurrencies, ConvertedValue } from '@/types/currencies.type.ts'
@@ -87,28 +87,56 @@ const updateRefParamWithDebounce = useDebounceFn(
     type: 'currency' | 'amount',
     value: string | number,
   ) => {
-    updateRefParam(input, type, value)
+    updateOneRefParam(input, type, value)
   },
   1000,
 )
 
 function updateRefParam(
   input: Ref<{ currency: string; amount?: number }>,
+  value: {
+    currency: string
+    amount: number
+  },
+  refatch: boolean = true,
+) {
+  input.value = value
+  if (refatch) {
+    convert()
+  }
+}
+
+function updateOneRefParam(
+  input: Ref<{ currency: string; amount?: number }>,
   type: 'currency' | 'amount',
-  value: string | number,
+  value: number | string,
+  refatch: boolean = true,
 ) {
   if (type === 'currency') {
     input.currency = value as string
   } else {
     input.amount = value as number
   }
-  convert()
+  if (refatch) {
+    convert()
+  }
 }
 
 function isInputActive(name: string): boolean {
   return activeElement.value === name
 }
-// TODO: Swap CurrencyCurrentPrice - Reload and cache
+
+function reverseValues(): void {
+  reverseActiveElement()
+  const inputsTempStorage = {
+    source: toRaw(sourceInput.value.value),
+    target: toRaw(targetInput.value.value),
+  }
+
+  updateRefParam(sourceInput.value, inputsTempStorage.target, false)
+  updateRefParam(targetInput.value, inputsTempStorage.source, false)
+}
+
 function reverseActiveElement(): void {
   activeElement.value = activeElement.value === 'input-one' ? 'input-two' : 'input-one'
 }
@@ -129,8 +157,5 @@ function reverseActiveElement(): void {
   border-radius: 50%;
   border: solid 1px gray;
   padding: 4px;
-  position: absolute;
-  top: 48%;
-  transform: translate(0, -40%);
 }
 </style>

@@ -10,16 +10,24 @@ import type { ConvertedValue } from '@/types/currencies.type'
 import { computed } from 'vue'
 import getMonthBasedOnNumber from '@/helpers/getMonth'
 type CurrencyCurrentPriceProps = {
-  baseCurrencyInfo: ConvertedValue
+  baseCurrencyInfo?: ConvertedValue
 }
 
 const props = defineProps<CurrencyCurrentPriceProps>()
 
 const currencyInfo = computed(() => {
+  if (!props.baseCurrencyInfo) {
+    return ''
+  }
+
   const data = props.baseCurrencyInfo
   return `${data.amount} ${data.from} = ${data.value} ${data.to}`
 })
 const currencyDate = computed(() => {
+  if (!props.baseCurrencyInfo) {
+    return ''
+  }
+
   const date = new Date(props.baseCurrencyInfo.timestamp * 1000)
 
   return `${getMonthBasedOnNumber(date.getMonth()).shortName} ${date.getDate()}, at ${date.getHours()}:${date.getMinutes()}`

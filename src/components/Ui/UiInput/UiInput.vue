@@ -1,6 +1,7 @@
 <template>
   <input
     v-model="model"
+    :disabled="props.isDisable"
     :type="props.numeric ? 'text' : props.type"
     :inputmode="props.numeric ? 'numeric' : undefined"
     class="ui-input"
@@ -15,10 +16,12 @@ const props = withDefaults(
   defineProps<{
     type?: InputType
     numeric?: boolean
+    isDisable: boolean
   }>(),
   {
     type: 'text',
     numeric: false,
+    isDisable: false,
   },
 )
 
