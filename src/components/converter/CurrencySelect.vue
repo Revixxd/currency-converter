@@ -1,57 +1,92 @@
 <template>
-  <div class="currency-select">
-    <AmountInput :data="propsData1" label="Amount" :is-active="isInputActive('input-one')" />
+  <div v-if="isLoading">LOADING</div>
+  <div v-else class="currency-select">
+    <AmountInput
+      :data="inputOne"
+      :is-active="isInputActive('input-one')"
+      @updateCurrency="(currency: string) => updateRefParam(inputOne, 'currency', currency)"
+      @updateAmount="(amount: number) => updateRefParam(inputOne, 'amount', amount)"
+      label="Amount"
+    />
     <ArrowSwap class="currency-select__arrow-swap" @click="reverseActiveElement()" />
-    <AmountInput :data="propsData2" label="Converted To" :is-active="isInputActive('input-two')" />
-    <Button @click="convert()">convert</Button>
-    {{ convertedValue }}
+    <AmountInput
+      :data="inputTwo"
+      :is-active="isInputActive('input-two')"
+      @updateCurrency="(currency: string) => updateRefParam(inputTwo, 'currency', currency)"
+      @updateAmount="(amount: number) => updateRefParam(inputTwo, 'amount', amount)"
+      label="Amount"
+    />
+    <button @click="convert()">convert</button>
   </div>
 </template>
 
 <script setup lang="ts">
 import AmountInput from './AmountInput.vue'
 import ArrowSwap from '../../assets/ArrowSwap.svg'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref, type Ref } from 'vue'
 import useCurrencieConverter from '@/composables/useCurrencieConvert.ts'
+import type { ConvertCurrencies } from '@/types/currencies.type.ts'
 
-const { convertCurrencies, convertedValue } = useCurrencieConverter()
+const { convertCurrencies, isLoading } = useCurrencieConverter()
+
+const inputOne = ref({
+  currency: 'USD',
+  amount: 100,
+})
+
+const inputTwo = ref({
+  currency: 'EUR',
+  amount: undefined as number | undefined,
+})
+
+const activeElement = ref<'input-one' | 'input-two'>('input-one')
+
+const sourceInput = computed(() => (activeElement.value === 'input-one' ? inputOne : inputTwo))
+const targetInput = computed(() => (activeElement.value === 'input-one' ? inputTwo : inputOne))
 
 function convert() {
   convertCurrencies({
-    from: 'USD',
-    to: 'EUR',
-    amount: 100,
+    from: sourceInput.value.value.currency,
+    to: targetInput.value.value.currency,
+    amount: sourceInput.value.value.amount,
+  }).then((result) => {
+    syncInputsFromResult(result)
   })
 }
 
-const activeElement = ref({
-  name: 'input-one',
+onMounted(async () => {
+  convert()
 })
 
-const propsData1 = {
-  currencyCode: 'USD',
+function syncInputsFromResult(result: ConvertCurrencies) {
+  sourceInput.value.value = {
+    currency: result.from,
+    amount: result.amount,
+  }
+  targetInput.value.value = {
+    currency: result.to,
+    amount: result.value,
+  }
 }
 
-const propsData2 = {
-  currencyCode: 'USD',
+function updateRefParam(
+  input: Ref<{ currency: string; amount?: number }>,
+  type: 'currency' | 'amount',
+  value: string | number,
+) {
+  if (type === 'currency') {
+    input.currency = value as string
+  } else {
+    input.amount = value as number
+  }
 }
 
 function isInputActive(name: string): boolean {
-  if (activeElement.value.name === name) {
-    return true
-  }
-  return false
+  return activeElement.value === name
 }
 
 function reverseActiveElement(): void {
-  if (activeElement.value.name === 'input-one') {
-    activeElement.value.name = 'input-two'
-    return
-  }
-  if (activeElement.value.name === 'input-two') {
-    activeElement.value.name = 'input-one'
-    return
-  }
+  activeElement.value = activeElement.value === 'input-one' ? 'input-two' : 'input-one'
 }
 </script>
 

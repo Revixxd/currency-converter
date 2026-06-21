@@ -17,6 +17,7 @@ type ConvertCurrencies = {
   to: string
   from: string
   amount: number
+  value: number
 }
 
 export type { Currency, ConvertedValue, ConvertCurrencies }

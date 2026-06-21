@@ -4,11 +4,11 @@
     <div class="currency-amount__info" v-if="!isMobile">
       <div class="container">
         <p>{{ currencySign }}</p>
-        <UiInput type="number" :numeric="true" />
+        <UiInput v-model="amountModel" type="number" :numeric="true" />
         <div class="container__select-currency" @click="pickCurrency">
           <span class="container__select-currency__divider"> </span>
           <div class="container__select-currency__curencyCode">
-            {{ currenCurrency.currencyCode }}
+            {{ props.data.currency }}
           </div>
         </div>
       </div>
@@ -17,21 +17,20 @@
       <div class="container">
         <div class="container__select-currency" @click="pickCurrency">
           <div class="container__select-currency__curencyCode">
-            {{ currenCurrency.currencyCode }}
+            {{ props.data.currency }}
           </div>
         </div>
         <p>{{ currencySign }}</p>
-        <UiInput type="number" :numeric="true" />
+        <UiInput v-model="amountModel" type="number" :numeric="true" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { currency } from '@/types/currencies.type.ts'
 import UiInput from '../Ui/UiInput/UiInput.vue'
 import { usePopup } from '@/composables/usePopup'
-import { defineAsyncComponent, ref, toValue, unref } from 'vue'
+import { computed, defineAsyncComponent } from 'vue'
 import { useSize } from '@/composables/useSize.ts'
 import useOverlay from '@/composables/useOverlay.ts'
 import useCurrencies from '@/composables/useCurrencies.ts'
@@ -41,7 +40,8 @@ const { currencies } = useCurrencies()
 export interface UiInputProps {
   label: string
   data: {
-    currencyCode: string
+    currency: string
+    amount: number
   }
   isActive: boolean
 }
@@ -54,11 +54,17 @@ const props = withDefaults(defineProps<UiInputProps>(), {
   isActive: () => false,
 })
 
+const emit = defineEmits<{
+  (e: 'updateCurrency', currency: string): void
+  (e: 'updateAmount', amount: number): void
+}>()
+
 const lazyCurrentListComponent = defineAsyncComponent(() => import('./CurrencyList.vue'))
 
-const currenCurrency = ref<{
-  currencyCode: string
-}>(props.data)
+const amountModel = computed<number>({
+  get: () => props.data.amount,
+  set: (value) => emit('updateAmount', Number(value)),
+})
 
 // const currencySign = composable(getCurrencySignBasedOnCode(props.currency))
 const currencySign = '$'
@@ -68,7 +74,7 @@ async function pickCurrency(e: MouseEvent) {
   if (isMobile.value) {
     chosenCode = await openOverlay<string>({
       component: lazyCurrentListComponent,
-      props: { currencies: unref(currencies.value) },
+      props: { currencies: currencies.value },
     })
   } else {
     chosenCode = await openPopup<string>({
@@ -76,14 +82,12 @@ async function pickCurrency(e: MouseEvent) {
       anchor: e.currentTarget as HTMLElement,
       placement: 'bottom-end',
       closable: true,
-      props: { currencies: unref(currencies.value) },
+      props: { currencies: currencies.value },
     })
   }
 
   if (chosenCode) {
-    currenCurrency.value = {
-      currencyCode: chosenCode,
-    }
+    emit('updateCurrency', chosenCode)
   }
 }
 </script>

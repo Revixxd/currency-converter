@@ -1,18 +1,16 @@
 import { convertValues } from '@/services/currencybeacon/currencybeacon'
-import type { ConvertCurrencies, ConvertedValue } from '@/types/currencies.type'
+import type { ConvertCurrencies } from '@/types/currencies.type'
 import { ref } from 'vue'
 
 export default function useCurrencieConverter() {
-  const convertedValue = ref<ConvertedValue>()
+  const isLoading = ref<boolean>(false)
 
-  // on first init here should be caclutated values for default setup
-  // convertCurrencies()
-
-  function convertCurrencies(obj: ConvertCurrencies): void {
-    convertValues(obj).then((ConvertedValue) => {
-      convertedValue.value = ConvertedValue
-    })
+  async function convertCurrencies(obj: ConvertCurrencies): Promise<ConvertCurrencies> {
+    isLoading.value = true
+    const data = await convertValues(obj)
+    isLoading.value = false
+    return data
   }
 
-  return { convertCurrencies, convertedValue }
+  return { convertCurrencies, isLoading }
 }
