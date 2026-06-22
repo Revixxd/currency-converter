@@ -1,9 +1,9 @@
 <template>
-  <div class="app">
+  <main class="app">
     <Popup />
     <Overlay />
     <CurrencyConverter />
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">

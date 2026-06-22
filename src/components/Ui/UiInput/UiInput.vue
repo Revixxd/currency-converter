@@ -6,6 +6,7 @@
     :inputmode="props.numeric ? 'numeric' : undefined"
     class="ui-input"
     @input="onInput"
+    :aria-label="props.label ? label : ''"
   />
 </template>
 
@@ -16,6 +17,7 @@ const props = withDefaults(
   defineProps<{
     type?: InputType
     numeric?: boolean
+    label: string
     isDisable: boolean
   }>(),
   {

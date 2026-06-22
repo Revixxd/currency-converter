@@ -9,6 +9,7 @@
           type="number"
           :numeric="true"
           :is-disable="props.isDisable"
+          label="input currency one"
         />
         <div class="container__select-currency" @click="pickCurrency">
           <span class="container__select-currency__divider"> </span>
@@ -31,6 +32,7 @@
           type="number"
           :numeric="true"
           :is-disable="props.isDisable"
+          label="input currency two"
         />
       </div>
     </div>

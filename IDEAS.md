@@ -21,3 +21,7 @@ On page load, the app would parse the query parameters and automatically:
 Display a tooltip next to the exchange rate date explaining why the shown date might not be today's date.
 
 **Reason:** Depending on the API plan/version, exchange rates may only update on business days or with a delay. Users should understand that a past date does not indicate an error, it reflects the most recent available rate from the data provider.
+
+## Reverse input value
+
+Insted of reversing input values with currency, swap only the amount
